@@ -1,9 +1,12 @@
 import {
   GetManyInterviewRequestDTO,
-  GetManyInterviewResponseDTO,
   UpdateInterviewRequestDTO,
 } from '@controller/dto';
 import { CreateInterviewRequestDTO } from '@controller/dto/create-interview-request.dto';
+import {
+  StandardResponse,
+  TransformInterceptor,
+} from '@interceptor/transform-response.interceptor';
 import {
   Body,
   Controller,
@@ -14,10 +17,13 @@ import {
   Param,
   Post,
   Put,
+  Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { InterviewService } from '@service/interview';
 
 @Controller('interview')
+@UseInterceptors(TransformInterceptor)
 export class InterviewController {
   logger = new Logger(InterviewController.name);
 
@@ -28,42 +34,51 @@ export class InterviewController {
 
   @Get()
   public async getManyInterview(
-    @Body() body: GetManyInterviewRequestDTO,
-  ): Promise<GetManyInterviewResponseDTO> {
-    const response = await this.interviewService.getManyInterview(body);
-    return response;
+    @Query() params: GetManyInterviewRequestDTO,
+  ): Promise<StandardResponse> {
+    const response = await this.interviewService.getManyInterview(params);
+
+    return {
+      message: 'Get Interviews successfully',
+      result: response.result,
+      meta: response.meta,
+    };
   }
 
   @Get(':id')
   public async getInterview(
     @Param('id') id: string,
-  ): Promise<GetManyInterviewResponseDTO> {
+  ): Promise<StandardResponse> {
     const response = await this.interviewService.getInterview(id);
-    return response;
+
+    return { message: 'Get Interview Successfully', result: response };
   }
 
   @Post()
   public async createInterview(
     @Body() body: CreateInterviewRequestDTO,
-  ): Promise<GetManyInterviewResponseDTO> {
+  ): Promise<StandardResponse> {
     const response = await this.interviewService.createInterview(body);
-    return response;
+
+    return { message: 'Create Interview Successfully', result: response };
   }
 
   @Put(':id')
   public async updateInterview(
     @Param('id') id: string,
     @Body() body: UpdateInterviewRequestDTO,
-  ): Promise<GetManyInterviewResponseDTO> {
+  ): Promise<StandardResponse> {
     const response = await this.interviewService.updateInterviewById(id, body);
-    return response;
+
+    return { message: 'Update Interview Successfully', result: response };
   }
 
   @Delete(':id')
   public async deleteInterview(
     @Param('id') id: string,
-  ): Promise<GetManyInterviewResponseDTO> {
+  ): Promise<StandardResponse> {
     const response = await this.interviewService.deleteInterviewById(id);
-    return response;
+
+    return { message: 'Delete Interview Successfully', result: response };
   }
 }
