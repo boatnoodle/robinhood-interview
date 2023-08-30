@@ -1,3 +1,4 @@
+export * from './get-interview-comments.request.dto';
 export * from './get-many-interview.request.dto';
 export * from './get-many-interview.response.dto';
 export * from './create-interview-request.dto';
