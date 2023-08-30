@@ -1,3 +1,5 @@
+import { SortOrder } from 'mongoose';
+
 export type Options<T> = {
   offset?: number;
   limit?: number;
@@ -5,5 +7,5 @@ export type Options<T> = {
 };
 
 export type SortMongo<T> = {
-  [key in keyof T]?: 1 | -1;
+  [key in keyof T]?: SortOrder;
 };

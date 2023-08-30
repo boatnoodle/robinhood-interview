@@ -18,7 +18,7 @@ export class CommentRepository {
     options: Options<CommentModel> = {
       offset: 0,
       limit: 20,
-      sort: { createdAt: 1, updatedAt: -1 },
+      sort: { createdAt: 'desc' },
     },
   ): Promise<CommentDocument[]> {
     const query = this.comment.find(params);
@@ -66,6 +66,11 @@ export class CommentRepository {
 
   async findByIdAndDelete(id: string): Promise<CommentDocument> {
     const response = await this.comment.findByIdAndDelete(id);
+    return response;
+  }
+
+  async count(params: any): Promise<number> {
+    const response = await this.comment.count(params);
     return response;
   }
 }

@@ -21,7 +21,7 @@ export class InterviewRepository {
     options: Options<InterviewModel> = {
       offset: 0,
       limit: 20,
-      sort: { createdAt: 1, updatedAt: -1 },
+      sort: { createdAt: 'desc' },
     },
   ): Promise<InterviewDocument[]> {
     const query = this.interview.find(params);
@@ -31,7 +31,6 @@ export class InterviewRepository {
       query.skip(offset);
       query.limit(limit);
       query.sort(sort);
-      query.populate('comments');
     }
 
     return query;
@@ -72,6 +71,11 @@ export class InterviewRepository {
 
   async findByIdAndDelete(id: string): Promise<InterviewDocument> {
     const response = await this.interview.findByIdAndDelete(id);
+    return response;
+  }
+
+  async count(params: any): Promise<number> {
+    const response = await this.interview.count(params);
     return response;
   }
 }
