@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 export default function Home() {
   const [interviews, setInterviews] = useState<any>([]);
+  const [meta, setMeta] = useState<any>(null);
   const [current, setCurrent] = useState(0);
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(5);
@@ -14,20 +15,27 @@ export default function Home() {
 
   const handleClickFetchMore = () => {
     const next = current + 1;
-    setOffset(limit * next);
-    setCurrent(next);
+    const offset = limit * next;
+
+    fetchInterviews(offset, limit).then((response) => {
+      setInterviews([...interviews, ...response.data.result]);
+      setMeta(response.data.meta);
+      setOffset(offset);
+      setCurrent(next);
+    });
   };
 
   const handleClickCreateInterview = () => {
     if (title && description) createInterview();
   };
 
-  async function fetchInterviews() {
+  async function fetchInterviews(offset: number, limit: number) {
     try {
       const response = await interviewService.getManyInterview({
         offset,
         limit,
       });
+
       return response;
     } catch (error) {
       console.error(error);
@@ -40,29 +48,28 @@ export default function Home() {
         title,
         description,
       });
+      const offset = 0;
+      const current = 0;
 
-      const response = await fetchInterviews();
-
-      setInterviews(response);
-      setTitle("");
-      setDescription("");
-      setOffset(0);
-      setCurrent(0);
+      fetchInterviews(offset, limit).then((response) => {
+        setInterviews(response.data.result);
+        setMeta(response.data.meta);
+        setTitle("");
+        setDescription("");
+        setOffset(offset);
+        setCurrent(current);
+      });
     } catch (error) {
       console.error(error);
     }
   }
 
   useEffect(() => {
-    fetchInterviews().then((response) => setInterviews(response));
+    fetchInterviews(offset, limit).then((response) => {
+      setInterviews(response.data.result);
+      setMeta(response.data.meta);
+    });
   }, []);
-
-  useEffect(() => {
-    if (offset)
-      fetchInterviews().then((response) =>
-        setInterviews([...interviews, ...response])
-      );
-  }, [offset]);
 
   return (
     <>
@@ -100,6 +107,9 @@ export default function Home() {
         </div>
       </div>
       <main className="flex flex-col gap-6 items-center justify-between p-24">
+        <div className="flex">
+          พบทั้งสิ้น {meta?.totalDocument || "</Link>0"} รายการ
+        </div>
         {interviews &&
           interviews.map((each: any, idx: number) => (
             <div
@@ -139,7 +149,7 @@ export default function Home() {
             </div>
           ))}
 
-        {interviews ? (
+        {interviews && interviews?.length != meta?.totalDocument ? (
           <div className="flex justify-center items-center mt-4">
             <button
               onClick={handleClickFetchMore}
