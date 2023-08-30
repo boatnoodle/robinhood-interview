@@ -8,7 +8,7 @@ services:
     image: nestjs-backend:latest
     container_name: nestjs-backend-container
     ports:
-      - "3000:3000"
+      - "8080:8080"
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -25,9 +25,6 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
-    # environment:
-    #   MONGO_INITDB_ROOT_USERNAME: root
-    #   MONGO_INITDB_ROOT_PASSWORD: example
     networks:
       - my-network
 
