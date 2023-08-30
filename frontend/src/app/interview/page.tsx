@@ -107,7 +107,9 @@ export default function Home() {
               key={idx}
             >
               <Link href={`/interview/${each?._id}`}>
-                <h4 className="text-xl font-semibold mb-4">{each?.title}</h4>
+                <h4 className="text-xl font-semibold mb-4 text-cyan-700">
+                  {each?.title}
+                </h4>
               </Link>
               <p className="mb-4">{each?.description}</p>
               <div className="flex mt-4">
@@ -137,14 +139,18 @@ export default function Home() {
             </div>
           ))}
 
-        <div className="flex justify-center items-center mt-4">
-          <button
-            onClick={handleClickFetchMore}
-            className="rounded-full px-4 py-2 bg-blue-500 text-white"
-          >
-            ดูเพิ่มเติม
-          </button>
-        </div>
+        {interviews ? (
+          <div className="flex justify-center items-center mt-4">
+            <button
+              onClick={handleClickFetchMore}
+              className="rounded-full px-4 py-2 bg-blue-500 text-white"
+            >
+              ดูเพิ่มเติม
+            </button>
+          </div>
+        ) : (
+          <></>
+        )}
       </main>
     </>
   );

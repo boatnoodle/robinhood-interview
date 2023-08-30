@@ -133,14 +133,18 @@ export default function Home({ params }: { params: { id: string } }) {
                 ))}
             </div>
 
-            <div className="flex justify-center items-center mt-4">
-              <button
-                onClick={handleClickFetchMore}
-                className="rounded-full px-4 py-2 bg-blue-500 text-white"
-              >
-                Fetch More
-              </button>
-            </div>
+            {comments && comments.length > 0 ? (
+              <div className="flex justify-center items-center mt-4">
+                <button
+                  onClick={handleClickFetchMore}
+                  className="rounded-full px-4 py-2 bg-blue-500 text-white"
+                >
+                  ดูเพิ่มเติม
+                </button>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
           <div className="w-64 flex flex-col justify-between border-l">
             <div className="p-2 mb-2">
