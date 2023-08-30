@@ -6,6 +6,7 @@ import { CreateInterviewRequestDTO } from '@controller/dto/create-interview-requ
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InterviewRepository } from '@repository/interview.repository';
 import { InterviewStatus } from '@schema/enum';
+import { InterviewDocument } from '@schema/interview.schema';
 
 @Injectable()
 export class InterviewService {
@@ -16,15 +17,23 @@ export class InterviewService {
     private readonly interviewRepository: InterviewRepository,
   ) {}
 
-  async getManyInterview(params: GetManyInterviewRequestDTO) {
+  async getManyInterview(params: GetManyInterviewRequestDTO): Promise<{
+    result: InterviewDocument[];
+    meta: { totalDocument: number };
+  }> {
     const { limit, offset } = params;
     //todo cache on redis
-    const response = await this.interviewRepository.find(
-      { status: { $ne: InterviewStatus.ARCHIVED } },
-      { limit, offset },
-    );
 
-    return response;
+    const [response, count] = await Promise.all([
+      this.interviewRepository.find(
+        { status: { $ne: InterviewStatus.ARCHIVED } },
+        { limit, offset, sort: { createdAt: 'desc' } },
+      ),
+      this.interviewRepository.count({
+        status: { $ne: InterviewStatus.ARCHIVED },
+      }),
+    ]);
+    return { result: response, meta: { totalDocument: count } };
   }
 
   async getInterview(id: string) {
@@ -37,8 +46,10 @@ export class InterviewService {
   async createInterview(payload: CreateInterviewRequestDTO) {
     //todo cache on redis
     const defaultStatus = InterviewStatus.TODO;
+    const defaultUser = 'robinhood'; // should create separate module to manage user
     const response = await this.interviewRepository.create({
       ...payload,
+      createdBy: defaultUser,
       status: defaultStatus,
     });
     return response;
