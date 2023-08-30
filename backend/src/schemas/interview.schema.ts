@@ -23,6 +23,7 @@ export class Interview {
   @Prop({
     type: [Types.ObjectId],
     ref: 'Comment',
+    default: [],
   })
   comments?: Types.ObjectId[];
 
@@ -32,6 +33,10 @@ export class Interview {
     enum: InterviewStatus,
   })
   status: string;
+
+  createdAt: Date;
+
+  updatedAt: Date;
 }
 
 export type InterviewDocument = Interview & Document;

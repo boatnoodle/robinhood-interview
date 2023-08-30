@@ -1,10 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import mongoose, { Document, Types } from 'mongoose';
 import { CommentStatus } from './enum';
+import { InterviewDocument } from './interview.schema';
 
 @Schema({ timestamps: true })
 export class Comment {
   _id: Types.ObjectId;
+
+  @Prop({
+    type: Types.ObjectId,
+    ref: 'Interview',
+  })
+  interviewId: Types.ObjectId;
+
+  interview?: InterviewDocument;
 
   @Prop({
     type: String,
@@ -19,6 +28,10 @@ export class Comment {
     enum: CommentStatus,
   })
   status: string;
+
+  createdAt: Date;
+
+  updatedAt: Date;
 }
 
 export type CommentDocument = Comment & Document;
