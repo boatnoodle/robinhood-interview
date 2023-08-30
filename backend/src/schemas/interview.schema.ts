@@ -9,14 +9,12 @@ export class Interview {
   @Prop({
     type: String,
     required: true,
-    unique: true,
   })
   title: string;
 
   @Prop({
     type: String,
     required: true,
-    unique: true,
   })
   description: string;
 
@@ -33,6 +31,13 @@ export class Interview {
     enum: InterviewStatus,
   })
   status: string;
+
+  // should be implement separated module instead hardcode this
+  @Prop({
+    type: String,
+    required: true,
+  })
+  createdBy: string;
 
   createdAt: Date;
 

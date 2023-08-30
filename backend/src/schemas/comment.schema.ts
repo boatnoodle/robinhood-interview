@@ -18,7 +18,6 @@ export class Comment {
   @Prop({
     type: String,
     required: true,
-    unique: true,
   })
   comment: string;
 
@@ -28,6 +27,13 @@ export class Comment {
     enum: CommentStatus,
   })
   status: string;
+
+  // should be implement separated module instead hardcode this
+  @Prop({
+    type: String,
+    required: true,
+  })
+  createdBy: string;
 
   createdAt: Date;
 
