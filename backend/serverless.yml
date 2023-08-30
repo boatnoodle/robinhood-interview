@@ -1,0 +1,37 @@
+service: robinhood-interview-service
+
+plugins:
+  - serverless-dotenv-plugin
+
+custom:
+  serverlessPluginTypescript:
+    tsConfigFileLocation: './tsconfig.build.json'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: ap-southeast-1
+  memorySize: 256
+  timeout: 60
+  stage:
+    production
+
+package:
+  individually: true
+  exclude:
+    - .git/**
+    - src/**
+    - test/**
+    - e2e/**
+    - README.md
+
+functions:
+  app:
+    handler: dist/index.handler
+    events:
+      - http:
+          method: ANY
+          path: /
+      - http:
+          method: ANY
+          path: '{proxy+}'
