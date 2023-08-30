@@ -16,6 +16,15 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@controller/*": ["src/controllers/*"],
+      "@service/*": ["src/services/*"],
+      "@repository/*": ["src/repositories/*"],
+      "@schema/*": ["src/schemas/*"],
+      "@interface/*": ["src/interface/*"],
+      "@libs/*": ["src/libs/*"],
+      "@test/*": ["test/*"],
+    },
   }
 }
