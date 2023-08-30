@@ -25,6 +25,7 @@
       "@interface/*": ["src/interface/*"],
       "@libs/*": ["src/libs/*"],
       "@test/*": ["test/*"],
+      "@interceptor/*": ["src/interceptors/*"],
     },
   }
 }
