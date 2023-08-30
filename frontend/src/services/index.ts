@@ -1,2 +1,2 @@
 export * from "./comment";
-export * from "./transaction";
+export * from "./interview";

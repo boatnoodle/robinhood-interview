@@ -1,19 +1,35 @@
 "use client";
 
-import interviewService from "@/services/transaction";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import commentService from "@/services/comment";
+import interviewService from "@/services/interview";
 
 export default function Home({ params }: { params: { id: string } }) {
   const [interview, setInterview] = useState<any>(null);
+  const [comments, setComments] = useState<any>([]);
   const [comment, setComment] = useState<any>("");
+  const [offset, setOffset] = useState(0);
+  const [current, setCurrent] = useState(1);
+  const [limit, setLimit] = useState(5);
   const { push } = useRouter();
 
   async function fetchInterviewById(id: string) {
     try {
       const response = await interviewService.getInterview(id);
-      setInterview(response);
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function fetchInterviewComments(id: string) {
+    try {
+      const response = await commentService.getInterviewComments(id, {
+        offset,
+        limit,
+      });
+      return response;
     } catch (error) {
       console.error(error);
     }
@@ -22,7 +38,8 @@ export default function Home({ params }: { params: { id: string } }) {
   async function updateInterviewById(id: string, updates: any) {
     try {
       await interviewService.updateInterview(id, updates);
-      await fetchInterviewById(id);
+      const response = await fetchInterviewById(id);
+      setInterview(response);
     } catch (error) {
       console.error(error);
     }
@@ -31,8 +48,11 @@ export default function Home({ params }: { params: { id: string } }) {
   async function addComment(id: string, updates: any) {
     try {
       await commentService.createComment(id, updates);
-      await fetchInterviewById(id);
+      const response = await fetchInterviewComments(id);
       setComment("");
+      setComments(response);
+      setOffset(0);
+      setCurrent(0);
     } catch (error) {
       console.error(error);
     }
@@ -49,9 +69,27 @@ export default function Home({ params }: { params: { id: string } }) {
     if (comment) addComment(params.id, { comment });
   };
 
+  const handleClickFetchMore = () => {
+    const next = current + 1;
+    setOffset(limit * next);
+    setCurrent(next);
+  };
+
   useEffect(() => {
-    if (params.id) fetchInterviewById(params.id);
+    if (params.id) {
+      fetchInterviewById(params.id).then((response) => setInterview(response));
+      fetchInterviewComments(params.id).then((response) =>
+        setComments(response)
+      );
+    }
   }, [params.id]);
+
+  useEffect(() => {
+    if (offset)
+      fetchInterviewComments(params.id).then((response) =>
+        setComments([...comments, ...response])
+      );
+  }, [offset]);
 
   if (!interview) return <>Loading</>;
 
@@ -85,13 +123,23 @@ export default function Home({ params }: { params: { id: string } }) {
             </div>
 
             <div className="flex flex-col gap-6">
-              {interview.comments.length > 0 &&
-                interview.comments.map((each: any, idx: any) => (
+              {comments &&
+                comments.length > 0 &&
+                comments.map((each: any, idx: any) => (
                   <div className="flex items-center py-2 border-b" key={idx}>
                     <div className="flex-shrink-0 text-2xl mr-4">{"😊"}</div>
                     <div className="flex-grow">{each.comment}</div>
                   </div>
                 ))}
+            </div>
+
+            <div className="flex justify-center items-center mt-4">
+              <button
+                onClick={handleClickFetchMore}
+                className="rounded-full px-4 py-2 bg-blue-500 text-white"
+              >
+                Fetch More
+              </button>
             </div>
           </div>
           <div className="w-64 flex flex-col justify-between border-l">
