@@ -33,7 +33,8 @@ export default function Home({ params }: { params: { id: string } }) {
   async function fetchInterviewComments(id: string) {
     try {
       setIsLoading(true);
-      const response = await commentService.getInterviewComments(id, {
+      const response = await commentService.getInterviewComments({
+        interviewId: id,
         offset,
         limit,
       });
@@ -58,10 +59,10 @@ export default function Home({ params }: { params: { id: string } }) {
     }
   }
 
-  async function addComment(id: string, updates: any) {
+  async function addComment(id: string, comment: string) {
     try {
       setIsLoading(true);
-      await commentService.createComment(id, updates);
+      await commentService.createComment({ interviewId: id, comment });
       const response = await fetchInterviewComments(id);
       setComment("");
       setComments(response.data.result);
@@ -83,7 +84,7 @@ export default function Home({ params }: { params: { id: string } }) {
   };
 
   const handleAddComment = () => {
-    if (comment) addComment(params.id, { comment });
+    if (comment) addComment(params.id, comment);
   };
 
   const handleClickFetchMore = () => {
