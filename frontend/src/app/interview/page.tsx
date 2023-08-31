@@ -3,13 +3,14 @@
 import interviewService from "@/services/interview";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ClipLoader } from "react-spinners";
 
-export default function Home() {
-  const [interviews, setInterviews] = useState<any>([]);
+export default function InterviewPage() {
+  const [interviews, setInterviews] = useState<any>(null);
   const [meta, setMeta] = useState<any>(null);
   const [current, setCurrent] = useState(0);
   const [offset, setOffset] = useState(0);
-  const [limit, setLimit] = useState(5);
+  const [limit] = useState(5);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -108,8 +109,18 @@ export default function Home() {
       </div>
       <main className="flex flex-col gap-6 items-center justify-between p-24">
         <div className="flex">
-          พบทั้งสิ้น {meta?.totalDocument || "</Link>0"} รายการ
+          พบทั้งสิ้น {meta?.totalDocument || "0"} รายการ
         </div>
+        {!interviews ? (
+          <ClipLoader
+            color={"#ffffff"}
+            loading={true}
+            size={150}
+            aria-label="Loading Spinner"
+          />
+        ) : (
+          <></>
+        )}
         {interviews &&
           interviews.map((each: any, idx: number) => (
             <div

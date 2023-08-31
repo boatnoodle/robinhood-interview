@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import commentService from "@/services/comment";
 import interviewService from "@/services/interview";
 import Link from "next/link";
+import { ClipLoader } from "react-spinners";
 
 export default function Home({ params }: { params: { id: string } }) {
   const [interview, setInterview] = useState<any>(null);
@@ -13,20 +14,25 @@ export default function Home({ params }: { params: { id: string } }) {
   const [comment, setComment] = useState<any>("");
   const [offset, setOffset] = useState(0);
   const [current, setCurrent] = useState(0);
-  const [limit, setLimit] = useState(5);
+  const [limit] = useState(5);
+  const [isLoading, setIsLoading] = useState(false);
   const { push } = useRouter();
 
   async function fetchInterviewById(id: string) {
     try {
+      setIsLoading(true);
       const response = await interviewService.getInterview(id);
       return response;
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   async function fetchInterviewComments(id: string) {
     try {
+      setIsLoading(true);
       const response = await commentService.getInterviewComments(id, {
         offset,
         limit,
@@ -34,21 +40,27 @@ export default function Home({ params }: { params: { id: string } }) {
       return response;
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   async function updateInterviewById(id: string, updates: any) {
     try {
+      setIsLoading(true);
       await interviewService.updateInterview(id, updates);
       const response = await fetchInterviewById(id);
       setInterview(response.data.result);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   async function addComment(id: string, updates: any) {
     try {
+      setIsLoading(true);
       await commentService.createComment(id, updates);
       const response = await fetchInterviewComments(id);
       setComment("");
@@ -58,6 +70,8 @@ export default function Home({ params }: { params: { id: string } }) {
       setCurrent(0);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -77,6 +91,15 @@ export default function Home({ params }: { params: { id: string } }) {
     setOffset(limit * next);
     setCurrent(next);
   };
+
+  const renderLoading = () => (
+    <ClipLoader
+      color={"#ffffff"}
+      loading={true}
+      size={20}
+      aria-label="Loading Spinner"
+    />
+  );
 
   useEffect(() => {
     if (params.id) {
@@ -98,7 +121,7 @@ export default function Home({ params }: { params: { id: string } }) {
       });
   }, [offset]);
 
-  if (!interview || !meta) return <>Loading</>;
+  if (!interview || !meta) return renderLoading();
 
   return (
     <>
@@ -129,14 +152,16 @@ export default function Home({ params }: { params: { id: string } }) {
                 <button
                   className="px-4 py-2 bg-blue-500 text-white rounded"
                   onClick={handleAddComment}
+                  disabled={isLoading}
                 >
-                  เพิ่มความคิดเห็น
+                  เพิ่มความคิดเห็น {isLoading ? renderLoading() : <></>}
                 </button>
               </div>
               <div className="flex justify-end">
                 พบทั้งสิ้น {meta?.totalDocument || "0"} รายการ
               </div>
               <div className="flex flex-col gap-6">
+                {!comments ? renderLoading() : <></>}
                 {comments &&
                   comments.length > 0 &&
                   comments.map((each: any, idx: any) => (
@@ -152,8 +177,9 @@ export default function Home({ params }: { params: { id: string } }) {
                   <button
                     onClick={handleClickFetchMore}
                     className="rounded-full px-4 py-2 bg-blue-500 text-white"
+                    disabled={isLoading}
                   >
-                    ดูเพิ่มเติม
+                    ดูเพิ่มเติม {isLoading ? renderLoading() : <></>}
                   </button>
                 </div>
               ) : (
@@ -196,8 +222,9 @@ export default function Home({ params }: { params: { id: string } }) {
                   <button
                     onClick={handleClickArchived}
                     className="rounded-md px-4 py-2 bg-blue-500 text-white"
+                    disabled={isLoading}
                   >
-                    จัดเก็บ
+                    จัดเก็บ {isLoading ? renderLoading() : <></>}
                   </button>
                 </div>
               </div>
