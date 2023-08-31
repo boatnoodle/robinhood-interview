@@ -2,10 +2,14 @@ import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class GetInterviewCommentRequestDTO {
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
+  interviewId: string;
+
+  @IsNotEmpty()
+  @IsString()
   offset: number;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   limit: number;
 }

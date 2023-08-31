@@ -37,14 +37,12 @@ export class InterviewService {
   }
 
   async getInterview(id: string) {
-    //todo cache on redis
     const response = await this.interviewRepository.findById(id);
 
     return response;
   }
 
   async createInterview(payload: CreateInterviewRequestDTO) {
-    //todo cache on redis
     const defaultStatus = InterviewStatus.TODO;
     const defaultUser = 'robinhood'; // should create separate module to manage user
     const response = await this.interviewRepository.create({
@@ -56,7 +54,6 @@ export class InterviewService {
   }
 
   async updateInterviewById(id: string, payload: UpdateInterviewRequestDTO) {
-    //todo cache on redis
     const response = await this.interviewRepository.findByIdAndUpdate(
       id,
       payload,
@@ -67,18 +64,6 @@ export class InterviewService {
 
   async deleteInterviewById(id: string) {
     const response = await this.interviewRepository.findByIdAndDelete(id);
-
-    return response;
-  }
-
-  async createComment(id: string, payload: any) {
-    const interview = await this.interviewRepository.findById(id);
-    if (interview.status === InterviewStatus.DONE)
-      throw new Error(`This interview has been done`);
-
-    const response = await this.interviewRepository.findByIdAndUpdate(id, {
-      $push: { comments: payload },
-    });
 
     return response;
   }

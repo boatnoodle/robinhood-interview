@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class GetManyInterviewRequestDTO {
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   offset: number;
 
   @IsNotEmpty()
-  @IsNumber()
+  @IsString()
   limit: number;
 }

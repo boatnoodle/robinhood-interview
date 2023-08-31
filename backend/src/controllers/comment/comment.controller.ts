@@ -29,12 +29,11 @@ export class CommentController {
     private readonly commentService: CommentService,
   ) {}
 
-  @Get('/interview/:id')
+  @Get()
   public async getInterviewComments(
-    @Param('id') interviewId: string,
     @Query() params: GetInterviewCommentRequestDTO,
   ): Promise<StandardResponse> {
-    const { limit, offset } = params;
+    const { interviewId, limit, offset } = params;
 
     const response = await this.commentService.getInterviewComments(
       interviewId,
@@ -43,6 +42,7 @@ export class CommentController {
         offset,
       },
     );
+
     return {
       message: 'Get Interview Comments Successfully',
       result: response.result,
@@ -50,12 +50,11 @@ export class CommentController {
     };
   }
 
-  @Post(':id')
+  @Post()
   public async createComment(
-    @Param('id') interviewId: string,
     @Body() body: CreateCommentRequestDTO,
   ): Promise<StandardResponse> {
-    const response = await this.commentService.createComment(interviewId, body);
+    const response = await this.commentService.createComment(body);
 
     return {
       message: 'Create Comment Successfully',
